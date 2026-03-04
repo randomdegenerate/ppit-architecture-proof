@@ -12,30 +12,36 @@ import (
 func main() {
 	router := http.NewServeMux()
 
-	router.HandleFunc("GET /item/{id}", func(w http.ResponseWriter, r *http.Request) {
-		id := r.PathValue("id")
-		fmt.Println(id)
-		w.Write(mongodb.FindById(id))
+	router.HandleFunc("GET /item/{name}", func(w http.ResponseWriter, r *http.Request) {
+		name := r.PathValue("name")
+		fmt.Println(name)
+		w.Write(mongodb.FindByName(name))
 	})
 
 	router.HandleFunc("PUT /item/add", func(w http.ResponseWriter, r *http.Request) {
+
 		
 		var item mongodb.Item
 		err := json.NewDecoder(r.Body).Decode(&item)
 		if err != nil {
-			w.WriteHeader(400)
-			fmt.Println(err)
+			//error declaration stuff
+			fmt.Printf("decoding error:%v",err)
+			return
 		}
-		fmt.Println(item)
 
-		err = mongodb.InsertItem(item)
-		if err != nil {
-			w.WriteHeader(400)
-			fmt.Println(err)
-		} else {
-			w.Write([]byte("item inserted sucessfully"))
-		}
+		fmt.Printf("item: \n%+v\n", item)
+
+		fmt.Fprintf(w,"item: \n%+v\n", item)
+		/*	
+			err = mongodb.InsertItem(item)
+			if err != nil {
+				//error declaration
+				fmt.Println("insertion error")
+				return
+			}	
+		*/
 	})
+
 	mongodb.ConnectDatabase()
 	server := http.Server{
 		Addr: ":8080",
