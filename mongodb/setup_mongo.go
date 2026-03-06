@@ -11,7 +11,7 @@ import (
 
 
 const db = "warehouse"
-const collName = "item"
+const collName = "items"
 
 var mongoClient * mongo.Client
 
@@ -31,7 +31,7 @@ func ConnectDatabase() {
 	client, err := mongo.Connect(clientOptions)
 	if err != nil {
 		panic(err)
-	}	
+	}
 
 	mongoClient = client
 }

@@ -17,9 +17,8 @@ func main() {
 		fmt.Println(name)
 		w.Write(mongodb.FindByName(name))
 	})
-
+		
 	router.HandleFunc("PUT /item/add", func(w http.ResponseWriter, r *http.Request) {
-
 		
 		var item mongodb.Item
 		err := json.NewDecoder(r.Body).Decode(&item)
@@ -28,18 +27,16 @@ func main() {
 			fmt.Printf("decoding error:%v",err)
 			return
 		}
-
+		
 		fmt.Printf("item: \n%+v\n", item)
 
-		fmt.Fprintf(w,"item: \n%+v\n", item)
-		/*	
-			err = mongodb.InsertItem(item)
-			if err != nil {
-				//error declaration
-				fmt.Println("insertion error")
-				return
-			}	
-		*/
+
+		err = mongodb.InsertItem(item)
+		if err != nil {
+			//error declaration
+			fmt.Println("insertion error")
+			return
+		}	
 	})
 
 	mongodb.ConnectDatabase()
