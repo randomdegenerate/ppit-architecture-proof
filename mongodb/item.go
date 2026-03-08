@@ -28,7 +28,7 @@ func InsertItem(item Item) error {
 	return err
 }
 
-func FindByName(itemName string) []byte {
+func GetByName(itemName string) []byte {
 	var result Item
 		filter := bson.D{{"item-name", itemName}}
 
@@ -44,5 +44,36 @@ func FindByName(itemName string) []byte {
 	}
 
 	return jsonData
+}
+
+func GetItems() ([]byte, error) { 
+	
+	var result []Item
+	collection := mongoClient.Database(db).Collection(collName)
+	cur, err := collection.Find(context.TODO(),bson.D{})
+	if err != nil {
+		fmt.Printf("Error retrieving collection:%v",err)
+		return nil, err
+	}
+
+	for cur.Next(context.TODO()) {
+		var item Item
+		err := cur.Decode(&item)
+		if err != nil {
+			fmt.Printf("Error decoding item: %v",err)
+			return nil, err
+		}
+		result = append(result, item)
+	}
+
+	cur.Close(context.TODO())
+
+	jsonData, err := json.MarshalIndent(result,"", "    ")
+	if err != nil {
+		fmt.Printf("Error marshalling item array:%v", err)
+		return nil, err
+	}
+
+	return jsonData, nil
 }
 

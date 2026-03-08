@@ -15,7 +15,7 @@ func main() {
 	router.HandleFunc("GET /item/{name}", func(w http.ResponseWriter, r *http.Request) {
 		name := r.PathValue("name")
 		fmt.Println(name)
-		w.Write(mongodb.FindByName(name))
+		w.Write(mongodb.GetByName(name))
 	})
 		
 	router.HandleFunc("PUT /item/add", func(w http.ResponseWriter, r *http.Request) {
@@ -38,6 +38,17 @@ func main() {
 			return
 		}	
 	})
+	 
+	router.HandleFunc("GET /items", func(w http.ResponseWriter, r *http.Request) {
+		jsonData,err := mongodb.GetItems()
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
+
+		w.Write(jsonData)
+	})
+	
 
 	mongodb.ConnectDatabase()
 	server := http.Server{
